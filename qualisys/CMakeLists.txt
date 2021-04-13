@@ -46,6 +46,8 @@ message("EIGEN3_INCLUDE_DIR: " ${EIGEN3_INCLUDE_DIR})
 
 add_library(qualisys_driver
   src/QualisysDriver.cpp
+  src/QualisysDriver6D.cpp
+  src/QualisysDriver3D.cpp
   include/qualisys/RTProtocol.cpp
   include/qualisys/NBC_Markup.cpp
   include/qualisys/RTPacket.cpp
@@ -86,7 +88,42 @@ add_dependencies(qualisys_odom
 add_executable(qualisys_node
   src/qualisys.cpp
 )
+
 target_link_libraries(qualisys_node
+  qualisys_driver
+  ${catkin_LIBRARIES}
+)
+
+
+
+add_executable(qualisys_node3D
+  src/qualisys3D.cpp
+)
+
+target_link_libraries(qualisys_node3D
+  qualisys_driver
+  ${catkin_LIBRARIES}
+)
+
+
+
+add_executable(qualisys_node6D
+  src/qualisys6D.cpp
+)
+
+target_link_libraries(qualisys_node6D
+  qualisys_driver
+  ${catkin_LIBRARIES}
+)
+
+
+
+
+add_executable(qualisys_node_example
+  src/RTClient6DOFExample.cpp
+)
+
+target_link_libraries(qualisys_node_example
   qualisys_driver
   ${catkin_LIBRARIES}
 )
