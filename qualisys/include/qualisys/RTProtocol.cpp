@@ -2173,6 +2173,7 @@ bool CRTProtocol::Read6DOFSettings()
         {
             if (eType == CRTPacket::PacketXML)
             {
+				//printf("xml = %s",mpoRTPacket->GetXMLString());
                 oXML.SetDoc(mpoRTPacket->GetXMLString());
                 //
                 // Read 6DOF bodies

@@ -9,9 +9,9 @@ route -n\n
 --> 192.168.100.0   0.0.0.0         255.255.255.0   U     0      0        0 eth1\n
 
 
-cd ~/git_project/mocap_ws/\n
-source devel/setup.bash\n
-roslaunch qualisys qualisys.launch\n
+cd ~/git_project/mocap_ws/                     \n
+source devel/setup.bash                        \n
+roslaunch qualisys qualisys.launch             \n
 
 
 

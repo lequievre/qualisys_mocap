@@ -75,6 +75,8 @@ void QualisysDriver3D::handlePacketData(CRTPacket* prt_packet) {
       subject_msg.markers[j].name = port_protocol.Get3DLabelName(j);
       
       
+      ROS_INFO("%s :  Point: X = %9f  Y = %9f  Z = %9f\n", subject_msg.markers[j].name.c_str(), subject_msg.markers[j].position.x, subject_msg.markers[j].position.y, subject_msg.markers[j].position.z);
+      
       //ROS_INFO("label=%s, m_x=%f, m_y=%f, m_z=%f",port_protocol.Get3DLabelName(j),m_x, m_y, m_z);
       
   }

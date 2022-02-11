@@ -33,6 +33,7 @@ bool QualisysDriver::init() {
 
   // Get 6DOF settings
   port_protocol.Read6DOFSettings();
+  //port_protocol_3D.Read3DSettings();
 
   return true;
 }
@@ -148,9 +149,11 @@ void QualisysDriver::handlePacketData(CRTPacket* prt_packet) {
       
     for (unsigned int iPoint = 0; iPoint < nbMarkers; iPoint++) {
             port_protocol.Get6DOFBodyPoint(i, iPoint, sPoint);
+            
             subject_msg.markers[iPoint].position.x = sPoint.fX;
             subject_msg.markers[iPoint].position.y = sPoint.fY;
             subject_msg.markers[iPoint].position.z = sPoint.fZ;
+            //subject_msg.markers[iPoint].name = port_protocol_3D.Get3DLabelName(iPoint);
             
             //ROS_INFO("  Point: X = %9f  Y = %9f  Z = %9f\n", sPoint.fX, sPoint.fY, sPoint.fZ);
     }    

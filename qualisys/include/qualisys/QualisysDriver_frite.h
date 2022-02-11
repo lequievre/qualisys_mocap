@@ -1,5 +1,5 @@
-#ifndef QUALISYS_DRIVER_H
-#define QUALISYS_DRIVER_H
+#ifndef QUALISYS_DRIVER_FRITE_H
+#define QUALISYS_DRIVER_FRITE_H
 
 #include <sstream>
 #include <cmath>
@@ -17,19 +17,19 @@
 
 namespace qualisys{
 
-class QualisysDriver{
+class QualisysDriverFrite{
 
   public:
     /*
      * @brief Constructor
      * @param nh Ros node
      */
-    QualisysDriver(const ros::NodeHandle& n);
+    QualisysDriverFrite(const ros::NodeHandle& n);
 
     /*
      * @brief Destructor
      */
-    ~QualisysDriver() {
+    ~QualisysDriverFrite() {
       disconnect();
     }
 
@@ -53,8 +53,8 @@ class QualisysDriver{
 
   private:
     // Disable the copy constructor and assign operator
-    QualisysDriver(const QualisysDriver& );
-    QualisysDriver& operator=(const QualisysDriver& );
+    QualisysDriverFrite(const QualisysDriverFrite& );
+    QualisysDriverFrite& operator=(const QualisysDriverFrite& );
 
     // Initialize publishers
     void checkPublishers(const int& body_count);
@@ -71,8 +71,6 @@ class QualisysDriver{
 
     // Protocol to connect to the server
     CRTProtocol port_protocol;
-    
-    //CRTProtocol port_protocol_3D;
 
     // Ros related
     ros::NodeHandle nh;
@@ -80,6 +78,13 @@ class QualisysDriver{
     // Publishers
     std::map<std::string, ros::Publisher> subject_publishers;
     tf::TransformBroadcaster tf_publisher;
+    
+    ros::Publisher pose_array_publisher;
+    ros::Publisher marker_line_strip_publisher;
+    
+    ros::Publisher marker_points_publisher;
+    ros::Publisher marker_pose_array_publisher;
+    
 
     // If publish tf msgs
     bool publish_tf;

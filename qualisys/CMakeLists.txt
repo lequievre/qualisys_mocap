@@ -48,6 +48,7 @@ add_library(qualisys_driver
   src/QualisysDriver.cpp
   src/QualisysDriver6D.cpp
   src/QualisysDriver3D.cpp
+  src/QualisysDriver_frite.cpp
   include/qualisys/RTProtocol.cpp
   include/qualisys/NBC_Markup.cpp
   include/qualisys/RTPacket.cpp
@@ -94,7 +95,16 @@ target_link_libraries(qualisys_node
   ${catkin_LIBRARIES}
 )
 
+# frite ***********
+add_executable(qualisys_node_frite
+  src/qualisys_frite.cpp
+)
 
+target_link_libraries(qualisys_node_frite
+  qualisys_driver
+  ${catkin_LIBRARIES}
+)
+# ****************
 
 add_executable(qualisys_node3D
   src/qualisys3D.cpp
