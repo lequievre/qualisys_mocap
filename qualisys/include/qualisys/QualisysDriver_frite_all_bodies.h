@@ -74,6 +74,7 @@ class QualisysDriverFriteAllBodies{
 
     // Publishers
     ros::Publisher pose_all_bodies_publisher;
+    ros::Publisher marker_pose_array_publisher;
     
     // If publish tf msgs
     bool publish_tf;

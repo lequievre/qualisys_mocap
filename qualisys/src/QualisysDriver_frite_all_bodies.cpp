@@ -42,6 +42,7 @@ bool QualisysDriverFriteAllBodies::init() {
   port_protocol.Read6DOFSettings();
   
   pose_all_bodies_publisher = nh.advertise<geometry_msgs::PoseArray>("/PoseAllBodies", 10);
+  marker_pose_array_publisher = nh.advertise<visualization_msgs::MarkerArray>("/VisualizationPoseArrayMarkers", 10);
   
   return true;
 }
@@ -59,6 +60,9 @@ void QualisysDriverFriteAllBodies::handlePacketData(CRTPacket* prt_packet) {
   // Number of rigid bodies
   int body_count = prt_packet->Get6DOFEulerBodyCount();
   
+  visualization_msgs::MarkerArray  marker_array_msg;
+  visualization_msgs::Marker  simple_marker_msg;
+  
   geometry_msgs::PoseArray  pose_array_msg;
   geometry_msgs::Pose pose_msg;
   
@@ -68,6 +72,19 @@ void QualisysDriverFriteAllBodies::handlePacketData(CRTPacket* prt_packet) {
   
   pose_array_msg.header.stamp = ros::Time::now(); // timestamp of creation of the msg
   pose_array_msg.header.frame_id = "map"; // frame id in which the array is published
+  
+  simple_marker_msg.header.frame_id = "map";
+  simple_marker_msg.header.stamp = ros::Time::now();
+  simple_marker_msg.ns = "points_and_lines";
+  simple_marker_msg.action = visualization_msgs::Marker::ADD;
+  
+  simple_marker_msg.type = visualization_msgs::Marker::SPHERE;
+  simple_marker_msg.scale.x = 0.02;
+  simple_marker_msg.scale.y = 0.02;
+  simple_marker_msg.scale.z = 0.02;
+  // Points are read
+  simple_marker_msg.color.r = 1.0f;
+  simple_marker_msg.color.a = 1.0;
   
   float x, y, z, roll, pitch, yaw;
   
@@ -98,9 +115,17 @@ void QualisysDriverFriteAllBodies::handlePacketData(CRTPacket* prt_packet) {
 	pose_msg.orientation = geometry_quaternion_body;
 	pose_array_msg.poses.push_back(pose_msg);
 	
+	
+	simple_marker_msg.id = i;
+	simple_marker_msg.pose.position = geometry_point_body;
+	simple_marker_msg.pose.orientation = geometry_quaternion_body;
+	
+	marker_array_msg.markers.push_back(simple_marker_msg);
+	
   }
 
   pose_all_bodies_publisher.publish(pose_array_msg);
+  marker_pose_array_publisher.publish(marker_array_msg);
  
   return;
 }
