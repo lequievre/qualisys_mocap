@@ -7,6 +7,10 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <geometry_msgs/Point.h>
 
+#include <tf/LinearMath/Matrix3x3.h>
+#include <tf/LinearMath/Quaternion.h>
+
+
 using namespace std;
 
 namespace qualisys{
@@ -58,7 +62,7 @@ void QualisysDriverFriteAllBodies::disconnect() {
 void QualisysDriverFriteAllBodies::handlePacketData(CRTPacket* prt_packet) {
 
   // Number of rigid bodies
-  int body_count = prt_packet->Get6DOFEulerBodyCount();
+  int body_count = prt_packet->Get6DOFBodyCount();
   
   visualization_msgs::MarkerArray  marker_array_msg;
   visualization_msgs::Marker  simple_marker_msg;
@@ -69,6 +73,8 @@ void QualisysDriverFriteAllBodies::handlePacketData(CRTPacket* prt_packet) {
   geometry_msgs::Quaternion geometry_quaternion_body;
   geometry_msgs::Point geometry_point_body;
   tf::Vector3 vector3_point_body;
+  tf::Quaternion quaternion_body;
+  tf::Matrix3x3 R;
   
   pose_array_msg.header.stamp = ros::Time::now(); // timestamp of creation of the msg
   pose_array_msg.header.frame_id = "map"; // frame id in which the array is published
@@ -86,30 +92,48 @@ void QualisysDriverFriteAllBodies::handlePacketData(CRTPacket* prt_packet) {
   simple_marker_msg.color.r = 1.0f;
   simple_marker_msg.color.a = 1.0;
   
-  float x, y, z, roll, pitch, yaw;
+  float x, y, z;
+  float rotationMatrix[9];
   
   // Publish data for each rigid body
   for (int i = 0; i < body_count; ++i) 
   {
-	  
-    prt_packet->Get6DOFEulerBody(i, x, y, z, roll, pitch, yaw);
+	  	
+    prt_packet->Get6DOFBody(i, x, y, z, rotationMatrix);
 
-    if(isnan(x) || isnan(y) || isnan(z) || isnan(roll) || isnan(pitch) || isnan(yaw)) 
+    if(isnan(x) || isnan(y) || isnan(z)) 
 	{
-      ROS_WARN_STREAM_THROTTLE(3, "Rigid-body " << i + 1 << "/" << body_count << " not detected");
+      ROS_WARN_STREAM_THROTTLE(3, "Rigid-body " << i + 1 << "/" << body_count << " not detected (translation has nan values) !");
       continue;
     }
 
-    // Qualisys sometimes flips 180 degrees around the x axis
-    if(roll > 90)
-      roll -= 180;
-    else if(roll < -90)
-      roll += 180;
-      
-      
-    geometry_quaternion_body = tf::createQuaternionMsgFromRollPitchYaw(roll * deg2rad, pitch * deg2rad, yaw * deg2rad);
-	vector3_point_body = tf::Vector3(x, y, z) / 1000.;
-	tf::pointTFToMsg(vector3_point_body, geometry_point_body);
+    for (int i=0; i<9; i++) 
+    {
+      if (isnan(rotationMatrix[i])) 
+      {
+			ROS_WARN_STREAM_THROTTLE(3, "Rigid-body " << i + 1 << "/" << body_count << " not detected (rotation Matrix has nan values) !");
+			continue;
+	  }
+    }
+    
+    // convert to quaternion
+    R.setValue(
+    rotationMatrix[0], rotationMatrix[3], rotationMatrix[6],
+	rotationMatrix[1], rotationMatrix[4], rotationMatrix[7],
+	rotationMatrix[2], rotationMatrix[5], rotationMatrix[8]
+	);
+	
+	R.getRotation(quaternion_body);
+	
+	geometry_quaternion_body.x = quaternion_body.x();
+	geometry_quaternion_body.y = quaternion_body.y();
+	geometry_quaternion_body.z = quaternion_body.z();
+	geometry_quaternion_body.w = quaternion_body.w();
+    
+    geometry_point_body.x = x / 1000.0;
+    geometry_point_body.y = y / 1000.0;
+    geometry_point_body.z = z / 1000.0;
+    
 	
 	pose_msg.position = geometry_point_body;
 	pose_msg.orientation = geometry_quaternion_body;
@@ -134,7 +158,7 @@ void QualisysDriverFriteAllBodies::run() {
 
   CRTPacket* prt_packet = port_protocol.GetRTPacket();
   CRTPacket::EPacketType e_type;
-  port_protocol.GetCurrentFrame(CRTProtocol::Component6dEuler);
+  port_protocol.GetCurrentFrame(CRTProtocol::Component6d);
 
   if(port_protocol.ReceiveRTPacket(e_type, true)) {
 
