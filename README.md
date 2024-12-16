@@ -4,23 +4,23 @@ ROS version of Qualisys Motion Capture System forked from : <br/>
 https://github.com/KumarRobotics/qualisys.git <br/>
 https://github.com/jgoppert/qualisys_ros <br/>
 
-cd Bureau\n
-./1_start_network.sh\n
+cd Bureau<br/>
+./1_start_network.sh<br/>
 
-route -n\n
---> 192.168.100.0   0.0.0.0         255.255.255.0   U     0      0        0 eth1\n
-
-
-cd ~/git_project/mocap_ws/                     \n
-source devel/setup.bash                        \n
-roslaunch qualisys qualisys.launch             \n
+route -n<br/>
+--> 192.168.100.0   0.0.0.0         255.255.255.0   U     0      0        0 eth1<br/>
 
 
+cd ~/git_project/mocap_ws/                     <br/>
+source devel/setup.bash                        <br/>
+roslaunch qualisys qualisys.launch             <br/>
 
-cd ~/git_project/mocap_ws/\n
-source devel/setup.bash\n
-rostopic list\n
 
-rostopic echo /qualisys/name_of_rigid_body\n
+
+cd ~/git_project/mocap_ws/<br/>
+source devel/setup.bash<br/>
+rostopic list<br/>
+
+rostopic echo /qualisys/name_of_rigid_body<br/>
 
 
