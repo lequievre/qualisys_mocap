@@ -32,7 +32,8 @@ bool QualisysDriver6D::init() {
   ROS_INFO_STREAM("Connected to " << server_address << ":" << base_port);
 
   // Get 6DOF settings
-  port_protocol.Read6DOFSettings();
+  bool data_available;
+  port_protocol.Read6DOFSettings(data_available);
 
 
   return true;
@@ -156,7 +157,7 @@ void QualisysDriver6D::run() {
 
   CRTPacket* prt_packet = port_protocol.GetRTPacket();
   CRTPacket::EPacketType e_type;
-  port_protocol.GetCurrentFrame(CRTProtocol::Component6dEuler);
+  port_protocol.GetCurrentFrame(CRTProtocol::cComponent6dEuler);
 
   if(port_protocol.ReceiveRTPacket(e_type, true)) {
 

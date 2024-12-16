@@ -35,7 +35,7 @@ bool QualisysDriverFriteAllBodies::init() {
   ROS_INFO_STREAM("Connecting to the Qualisys Motion Tracking system specified at: "
       << server_address << ":" << base_port);
 
-  if(!port_protocol.Connect((char *)server_address.data(), base_port, 0, 1, 7)) {
+  if(!port_protocol.Connect((char *)server_address.data(), base_port, 0, 1, 19, false)) {
     ROS_FATAL_STREAM("Could not find the Qualisys Motion Tracking system at: "
         << server_address << ":" << base_port);
     return false;
@@ -43,7 +43,8 @@ bool QualisysDriverFriteAllBodies::init() {
   ROS_INFO_STREAM("Connected to " << server_address << ":" << base_port);
 
   // Get 6DOF settings
-  port_protocol.Read6DOFSettings();
+  bool data_available;
+  port_protocol.Read6DOFSettings(data_available);
   
   pose_all_bodies_publisher = nh.advertise<geometry_msgs::PoseArray>("/PoseAllBodies", 10);
   marker_pose_array_publisher = nh.advertise<visualization_msgs::MarkerArray>("/VisualizationPoseArrayMarkers", 10);
@@ -100,18 +101,20 @@ void QualisysDriverFriteAllBodies::handlePacketData(CRTPacket* prt_packet) {
   {
 	  	
     prt_packet->Get6DOFBody(i, x, y, z, rotationMatrix);
+    string body_name(port_protocol.Get6DOFBodyName(i));
 
-    if(isnan(x) || isnan(y) || isnan(z)) 
+    if(!isfinite(x) || !isfinite(y) || !isfinite(z)) 
 	{
-      ROS_WARN_STREAM_THROTTLE(3, "Rigid-body " << i + 1 << "/" << body_count << " not detected (translation has nan values) !");
+      ROS_WARN_STREAM_THROTTLE(3, "Rigid-body " << i + 1 << "(" << body_name << ")" << "/" << body_count << " not detected (translation has infinite values) !");
       continue;
     }
 
-    for (int i=0; i<9; i++) 
+    for (int j=0; j<9; j++) 
     {
-      if (isnan(rotationMatrix[i])) 
+      if (!isfinite(rotationMatrix[j])) 
       {
-			ROS_WARN_STREAM_THROTTLE(3, "Rigid-body " << i + 1 << "/" << body_count << " not detected (rotation Matrix has nan values) !");
+			ROS_WARN_STREAM_THROTTLE(3, "Rigid-body " << i + 1 << "(" << body_name << ")" << "/" << body_count << " not detected (rotation Matrix has infinite values) ! " << "rotationMatrix[" << j << "] = " << rotationMatrix[j] );
+			
 			continue;
 	  }
     }
@@ -158,7 +161,7 @@ void QualisysDriverFriteAllBodies::run() {
 
   CRTPacket* prt_packet = port_protocol.GetRTPacket();
   CRTPacket::EPacketType e_type;
-  port_protocol.GetCurrentFrame(CRTProtocol::Component6d);
+  port_protocol.GetCurrentFrame(CRTProtocol::cComponent6d);
 
   if(port_protocol.ReceiveRTPacket(e_type, true)) {
 

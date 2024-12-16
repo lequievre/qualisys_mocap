@@ -55,11 +55,12 @@ int main(int argc, char **argv)
     {
         nBasePort = strtoul(argv[2], NULL, 10);
     }
+    bool data_available;
 
     if (poRTProtocol.Connect(pServerAddr, QTM_RT_SERVER_BASE_PORT, 0, 1, 7))
     {
         // Get settings from QTM
-        if (poRTProtocol.Read6DOFSettings())
+        if (poRTProtocol.Read6DOFSettings(data_available))
         {
             int nBodies = poRTProtocol.Get6DOFBodyCount();
 
@@ -85,7 +86,7 @@ int main(int argc, char **argv)
         getchar();
         system("cls");
 
-        poRTProtocol.StreamFrames(CRTProtocol::RateAllFrames, 0, 0, NULL, CRTProtocol::Component6dEuler);
+        poRTProtocol.StreamFrames(CRTProtocol::RateAllFrames, 0, 0, NULL, CRTProtocol::cComponent6dEuler);
 
         CRTPacket::EPacketType eType;
         bool                   bKeyAbort  = false;

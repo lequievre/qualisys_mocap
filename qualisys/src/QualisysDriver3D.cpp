@@ -33,7 +33,9 @@ bool QualisysDriver3D::init() {
 
   // Get 6DOF settings
   //port_protocol.Read6DOFSettings();
-  port_protocol.Read3DSettings();
+  bool data_available;
+  
+  port_protocol.Read3DSettings(data_available);
   
   subject_publisher = nh.advertise<qualisys::Subject>("/3DMarkers", 10);
   
@@ -90,7 +92,7 @@ void QualisysDriver3D::run() {
 
   CRTPacket* prt_packet = port_protocol.GetRTPacket();
   CRTPacket::EPacketType e_type;
-  port_protocol.GetCurrentFrame(CRTProtocol::Component3d);
+  port_protocol.GetCurrentFrame(CRTProtocol::cComponent3d);
 
   if(port_protocol.ReceiveRTPacket(e_type, true)) {
 

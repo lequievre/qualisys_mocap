@@ -51,9 +51,9 @@ add_library(qualisys_driver
   src/QualisysDriver_frite.cpp
   src/QualisysDriver_frite_all_bodies.cpp
   include/qualisys/RTProtocol.cpp
-  include/qualisys/NBC_Markup.cpp
   include/qualisys/RTPacket.cpp
   include/qualisys/Network.cpp
+  include/qualisys/Markup.cpp
 )
 target_link_libraries(qualisys_driver
   ${catkin_LIBRARIES}

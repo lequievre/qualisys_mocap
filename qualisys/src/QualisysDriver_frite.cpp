@@ -38,7 +38,8 @@ bool QualisysDriverFrite::init() {
   ROS_INFO_STREAM("Connected to " << server_address << ":" << base_port);
 
   // Get 6DOF settings
-  port_protocol.Read6DOFSettings();
+  bool data_available;
+  port_protocol.Read6DOFSettings(data_available);
   
   pose_array_publisher = nh.advertise<geometry_msgs::PoseArray>("/PoseMarkers", 10);
   marker_line_strip_publisher = nh.advertise<visualization_msgs::Marker>("/VisualizationLineStripMarkers", 10);
@@ -257,7 +258,7 @@ void QualisysDriverFrite::run() {
 
   CRTPacket* prt_packet = port_protocol.GetRTPacket();
   CRTPacket::EPacketType e_type;
-  port_protocol.GetCurrentFrame(CRTProtocol::Component6dEuler);
+  port_protocol.GetCurrentFrame(CRTProtocol::cComponent6dEuler);
 
   if(port_protocol.ReceiveRTPacket(e_type, true)) {
 
