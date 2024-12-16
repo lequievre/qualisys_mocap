@@ -1,6 +1,8 @@
 # qualisys_mocap
 
-ROS version of Qualisys Motion Capture System forked from : https://github.com/KumarRobotics/qualisys.git\n
+ROS version of Qualisys Motion Capture System forked from : \n
+https://github.com/KumarRobotics/qualisys.git\n
+https://github.com/jgoppert/qualisys_ros\n
 
 cd Bureau\n
 ./1_start_network.sh\n
